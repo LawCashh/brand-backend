@@ -15,6 +15,54 @@ exports.getAllCategories = catchAsync(async (req, res, next) => {
     .json({ status: 'ok', message: 'uzete sve kategorije', data: categories });
 });
 
+exports.getParentCategories = catchAsync(async (req, res, next) => {
+  const parentCategories = await Category.find({ parent: null }).select('-__v');
+  if (!parentCategories)
+    return res.status(400).json({
+      status: 'not ok',
+      message: 'greska u uzimanju parent kategorija',
+    });
+  res.status(200).json({
+    status: 'ok',
+    message: 'uzete sve glavne kategorije',
+    data: parentCategories,
+  });
+});
+
+exports.getThreeDiscountedCategories = catchAsync(async (req, res, next) => {
+  const randomCategories = await Category.aggregate([
+    {
+      $lookup: {
+        from: 'products',
+        localField: '_id',
+        foreignField: 'category',
+        as: 'products',
+      },
+    },
+    {
+      $match: {
+        'products.discount': { $gte: 20 },
+      },
+    },
+    {
+      $sample: { size: 3 },
+    },
+    {
+      $project: {
+        products: 0,
+      },
+    },
+  ]);
+  if (!randomCategories)
+    return res.status(400).json({
+      status: 'not ok',
+      message: 'greska u uzimanju subkategorija na akciji',
+    });
+  res
+    .status(200)
+    .json({ status: 'ok', message: 'uzete', data: randomCategories });
+});
+
 exports.getAllSubCategories = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const parentCategory = await Category.find({ _id: req.params.id }).select(

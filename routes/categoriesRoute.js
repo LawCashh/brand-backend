@@ -5,6 +5,14 @@ const categoriesRouter = express.Router();
 
 categoriesRouter.get('/', categoriesController.getAllCategories);
 categoriesRouter.get(
+  '/parent-categories',
+  categoriesController.getParentCategories,
+);
+categoriesRouter.get(
+  '/three-discounted',
+  categoriesController.getThreeDiscountedCategories,
+);
+categoriesRouter.get(
   '/:id/subcategories',
   categoriesController.getAllSubCategories,
 );

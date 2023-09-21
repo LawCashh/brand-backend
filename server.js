@@ -20,32 +20,32 @@ const uri = process.env.DATABASE_URL.replace(
 // const Category = require('./models/categoryModel');
 const Product = require('./models/productModel');
 
-const randomBrand = [
-  'A.S.C - HEMIK',
-  'Agro - Trend STR',
-  'Agromarket',
-  'Actiwa',
-  'AI. I. SR',
-  'Brend 1',
-  'Brend 2',
-  'Brend 3',
-  'Brend 4',
-];
-const randomDistributer = [
-  'Metalac',
-  'Andjelic plast D.O.O',
-  'Plastic D.O.O',
-  'Modern Trade',
-  'TDC',
-  'Distributer 1',
-  'Distributer 2',
-  'Distributer 3',
-];
+// const randomBrand = [
+//   'A.S.C - HEMIK',
+//   'Agro - Trend STR',
+//   'Agromarket',
+//   'Actiwa',
+//   'AI. I. SR',
+//   'Brend 1',
+//   'Brend 2',
+//   'Brend 3',
+//   'Brend 4',
+// ];
+// const randomDistributer = [
+//   'Metalac',
+//   'Andjelic plast D.O.O',
+//   'Plastic D.O.O',
+//   'Modern Trade',
+//   'TDC',
+//   'Distributer 1',
+//   'Distributer 2',
+//   'Distributer 3',
+// ];
 
-function getRandomElement(array) {
-  const randomIndex = Math.floor(Math.random() * array.length);
-  return array[randomIndex];
-}
+// function getRandomElement(array) {
+//   const randomIndex = Math.floor(Math.random() * array.length);
+//   return array[randomIndex];
+// }
 
 const db = mongoose
   .connect(uri)
