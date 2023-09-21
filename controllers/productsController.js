@@ -5,7 +5,10 @@ const Product = require('../models/productModel');
 const Category = require('../models/categoryModel');
 
 exports.getAllProducts = catchAsync(async (req, res, next) => {
-  const products = await Product.find().select('-__v');
+  let productsQuery = Product.find().select('-__v');
+  if (req.query.limit != undefined)
+    productsQuery = productsQuery.limit(req.query.limit);
+  const products = await productsQuery.exec();
   if (!products)
     return res
       .status(400)

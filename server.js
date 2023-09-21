@@ -19,7 +19,7 @@ const uri = process.env.DATABASE_URL.replace(
 
 const Category = require('./models/categoryModel');
 const Product = require('./models/productModel');
-const { get } = require('mongoose');
+const Utility = require('./models/utilityModel');
 
 const db = mongoose
   .connect(uri)
