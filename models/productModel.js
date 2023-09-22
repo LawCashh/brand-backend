@@ -20,6 +20,7 @@ const productSchema = mongoose.Schema({
   },
   numAvailable: {
     type: Number,
+    default: 0,
   },
   brand: {
     type: String,
