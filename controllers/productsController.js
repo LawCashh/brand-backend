@@ -6,7 +6,7 @@ const Category = require('../models/categoryModel');
 
 exports.getAllProducts = catchAsync(async (req, res, next) => {
   let productsQuery = Product.find().select('-__v');
-  let pagesCount = 0;
+  let pagesCount = 1;
   let page = 1;
   let limit = 10;
   let documentsCountQuery = Product.find().select('-__v');
@@ -14,27 +14,37 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
     page = req.query.page;
   }
   if (req.query.brand != undefined) {
-    const escapedSearchString = req.query.brand.replace(
-      /[-\/\\^$*+?.()|[\]{}]/g,
-      '\\$&',
+    const brandNames = req.query.brand.split(',');
+    const escapedBrandNames = brandNames.map((name) =>
+      name.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'),
     );
+    const regexArray = escapedBrandNames.map(
+      (escapedName) => new RegExp(escapedName, 'i'),
+    );
+
     productsQuery = productsQuery.where({
-      brand: { $regex: escapedSearchString, $options: 'i' },
+      brand: { $in: regexArray },
     });
+
     documentsCountQuery = documentsCountQuery.where({
-      brand: { $regex: escapedSearchString, $options: 'i' },
+      brand: { $in: regexArray },
     });
   }
   if (req.query.distributer != undefined) {
-    const escapedSearchString = req.query.distributer.replace(
-      /[-\/\\^$*+?.()|[\]{}]/g,
-      '\\$&',
+    const distributerNames = req.query.distributer.split(',');
+    const escapedDistributerNames = distributerNames.map((name) =>
+      name.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'),
     );
+    const regexArray = escapedDistributerNames.map(
+      (escapedName) => new RegExp(escapedName, 'i'),
+    );
+
     productsQuery = productsQuery.where({
-      distributer: { $regex: escapedSearchString, $options: 'i' },
+      distributer: { $in: regexArray },
     });
+
     documentsCountQuery = documentsCountQuery.where({
-      distributer: { $regex: escapedSearchString, $options: 'i' },
+      distributer: { $in: regexArray },
     });
   }
   if (req.query.search != undefined) {
@@ -54,8 +64,8 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
   if (req.query.limit != undefined) {
     limit = req.query.limit;
     productsQuery = productsQuery.limit(limit);
-    pagesCount = Math.floor(documentsCount / limit);
   }
+  pagesCount = Math.floor(documentsCount / limit);
   if (documentsCount % limit != 0) pagesCount++;
   productsQuery = productsQuery.skip((page - 1) * limit);
   const products = await productsQuery.exec();
