@@ -7,16 +7,54 @@ const Category = require('../models/categoryModel');
 exports.getAllProducts = catchAsync(async (req, res, next) => {
   let productsQuery = Product.find().select('-__v');
   let pagesCount = 0;
-  let documentsCount = await Product.countDocuments();
   let page = 1;
   let limit = 10;
+  let documentsCountQuery = Product.find().select('-__v');
+  if (req.query.page != undefined) {
+    page = req.query.page;
+  }
+  if (req.query.brand != undefined) {
+    const escapedSearchString = req.query.brand.replace(
+      /[-\/\\^$*+?.()|[\]{}]/g,
+      '\\$&',
+    );
+    productsQuery = productsQuery.where({
+      brand: { $regex: escapedSearchString, $options: 'i' },
+    });
+    documentsCountQuery = documentsCountQuery.where({
+      brand: { $regex: escapedSearchString, $options: 'i' },
+    });
+  }
+  if (req.query.distributer != undefined) {
+    const escapedSearchString = req.query.distributer.replace(
+      /[-\/\\^$*+?.()|[\]{}]/g,
+      '\\$&',
+    );
+    productsQuery = productsQuery.where({
+      distributer: { $regex: escapedSearchString, $options: 'i' },
+    });
+    documentsCountQuery = documentsCountQuery.where({
+      distributer: { $regex: escapedSearchString, $options: 'i' },
+    });
+  }
+  if (req.query.search != undefined) {
+    const escapedSearchString = req.query.search.replace(
+      /[-\/\\^$*+?.()|[\]{}]/g,
+      '\\$&',
+    );
+    productsQuery = productsQuery.where({
+      title: { $regex: escapedSearchString, $options: 'i' },
+    });
+    documentsCountQuery = documentsCountQuery.where({
+      title: { $regex: escapedSearchString, $options: 'i' },
+    });
+  }
+  documentsCountQuery = documentsCountQuery.countDocuments();
+  let documentsCount = await documentsCountQuery.exec();
   if (req.query.limit != undefined) {
     limit = req.query.limit;
     productsQuery = productsQuery.limit(limit);
-    pagesCount = documentsCount / limit;
-  }
-  if (req.query.page != undefined) {
-    page = req.query.page;
+    pagesCount = Math.floor(documentsCount / limit);
   }
   if (documentsCount % limit != 0) pagesCount++;
   productsQuery = productsQuery.skip((page - 1) * limit);
@@ -29,6 +67,7 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
     status: 'ok',
     message: 'uzeti producti',
     brojStranica: pagesCount,
+    trenutnaStranica: Number.parseInt(page),
     data: products,
   });
 });
