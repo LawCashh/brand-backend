@@ -14,7 +14,8 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
     page = req.query.page;
   }
   if (req.query.brand != undefined) {
-    const brandNames = req.query.brand.split(',');
+    reqQueryBrand = req.query.brand.replace('%', ' ');
+    const brandNames = reqQueryBrand.split(',');
     const escapedBrandNames = brandNames.map((name) =>
       name.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'),
     );
@@ -31,7 +32,8 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
     });
   }
   if (req.query.distributer != undefined) {
-    const distributerNames = req.query.distributer.split(',');
+    reqQueryDistributer = req.query.distributer.replace('%', ' ');
+    const distributerNames = reqQueryDistributer.split(',');
     const escapedDistributerNames = distributerNames.map((name) =>
       name.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'),
     );
@@ -48,7 +50,8 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
     });
   }
   if (req.query.search != undefined) {
-    const escapedSearchString = req.query.search.replace(
+    reqQuerySearch = req.query.search.replace('%', ' ');
+    const escapedSearchString = reqQuerySearch.replace(
       /[-\/\\^$*+?.()|[\]{}]/g,
       '\\$&',
     );
